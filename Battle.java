@@ -50,4 +50,7 @@ class Battle {
 	public boolean battleOver() {
 		return battleResult() != 0;
 	}
+
+	public int getNumAttackers() { return attack; }
+	public int getNumDefenders() { return defense; }
 }

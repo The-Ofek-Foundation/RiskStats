@@ -1,4 +1,7 @@
 public class RiskStats {
+
+	private final double MAX_SCALE = 100;
+
 	public static void main(String... pumpkins) {
 		RiskStats rs = new RiskStats();
 		rs.simulateBattles(1000000, Integer.parseInt(pumpkins[0]),
@@ -29,18 +32,41 @@ public class RiskStats {
 
 	}
 
-	public void simulateBattles(int numBattles, int numAttack, int numDefense,
+	private void simulateBattles(int numBattles, int numAttack, int numDefense,
 		Battle.DefenseTactic tactic) {
 		System.out.println();
-		int attackWins = 0, defenseWins = 0;
-		for (int i = 0; i < numBattles; i++)
-			if (new Battle(numAttack, numDefense, tactic).simulateBattle() == 1)
-				attackWins++;
-			else defenseWins++;
+		int[] attackersLeft = new int[numAttack + 1];
+		int[] defendersLeft = new int[numDefense + 1];
+		for (int i = 0; i < numBattles; i++) {
+			Battle battle = new Battle(numAttack, numDefense, tactic);
+			battle.simulateBattle();
+			attackersLeft[battle.getNumAttackers()]++;
+			defendersLeft[battle.getNumDefenders()]++;
+		}
 
 		System.out.printf("%d attack wins.\n%d defense wins.\n",
-			attackWins, defenseWins);
+			defendersLeft[0], attackersLeft[1]);
 		System.out.printf("%.2f%% chance of winning.\n\n",
-			(attackWins * 100f / numBattles));
+			(defendersLeft[0] * 100f / numBattles));
+
+		int maxVal = attackersLeft[0] = -1;
+		for (int i : attackersLeft) maxVal = Math.max(maxVal, i);
+		for (int i : defendersLeft) maxVal = Math.max(maxVal, i);
+
+		System.out.println("ATTACKERS LEFT HISTOGRAM\n");
+		outputHistogram(attackersLeft, numBattles, maxVal);
+
+		System.out.println("\n\nDEFENDERS LEFT HISTOGRAM\n");
+		outputHistogram(defendersLeft, numBattles, maxVal);
+	}
+
+	private void outputHistogram(int[] numLeft, int total, int maxVal) {
+		for (int i = 0; i < numLeft.length; i++) {
+			if (numLeft[i] < 0) continue; // for 0 attackers
+			System.out.printf("%3d | %5.2f%% | ", i, numLeft[i] * 100f / total);
+			for (int a = 0; a < numLeft[i] * MAX_SCALE / maxVal; a++)
+				System.out.print("X");
+			System.out.println();
+		}
 	}
 }
