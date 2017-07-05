@@ -5,10 +5,9 @@ public class RiskDice {
 		m1 = m2 = 0;
 		for (int i = 0; i < numDice; i++) {
 			int value = (int)(Math.random() * 6) + 1;
-			if (value > m1) {
-				int temp = m1;
+			if (value >= m1) {
+				m2 = m1;
 				m1 = value;
-				m2 = temp;
 			} else if (value > m2) {
 				m2 = value;
 			}
